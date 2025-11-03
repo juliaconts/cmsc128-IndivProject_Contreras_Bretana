@@ -19,11 +19,8 @@
     </head>
     <body class="homepage">
 
-<<<<<<< Updated upstream
-=======
         <a href="{{ url_for('profile') }}" id="account-icon"><span class="material-symbols-outlined">account_circle</span></a>
         
->>>>>>> Stashed changes
         <!-- Header section: Title + Sorting + Add Task -->
         <div class="header">
             <h1>To Do List:</h1>
@@ -62,18 +59,7 @@
                             data-desc="{{ task[7] }}"
                             data-sub="{{ task[8] }}"
                             data-created="{{ task[9] }}">
-
-                            <!-- Priority symbols -->
-                            <div class="priority-symbol">
-                                {% if task[1] == 1 %}
-                                <span>❗</span>
-                                {% elif task[1] == 2 %}
-                                <span>💡</span>
-                                {% else %}
-                                <span>📝</span>
-                                {% endif %}
-                            </div>
-
+                            
                             <!-- Task label -->
                             <div class="task-label"><strong>{{ task[3] }}</strong></div>
                             <span class="line">|</span>
@@ -87,11 +73,6 @@
                             </div>
 
                             <!-- Checkbox and timestamp -->
-<<<<<<< Updated upstream
-                            <div class="checkbox-stamp-wrapper">
-                                <input type="checkbox" class="task-check">
-                                <span class="time-stamp"><em>Created on: {{ task[8] | format_timestamp }}</em></span>
-=======
                             <div class="timestamp-prio">
                                 <div class="priority-symbol">
                                 {% if task[2] == 1 %}
@@ -100,7 +81,6 @@
                                 {% endif %}
                                 </div>
                                 <span class="time-stamp"><em>Created on: {{ task[9] | format_timestamp }}</em></span>
->>>>>>> Stashed changes
                             </div>
                         </li>
                     {% endfor %}
