@@ -5,7 +5,7 @@
         <meta charset = "UTF-8">
         <meta name = "author" content = "width=device-width, initial-scale=1.0">
 
-        <title>To-Do List</title>
+        <title>TooDoo</title>
         <link rel="icon" type="image/x-icon" href="./Images/Icons/Icon.png">  
 
         <!-- Fonts and Icons -->
@@ -23,7 +23,7 @@
         
         <!-- Header section: Title + Sorting + Add Task -->
         <div class="header">
-            <h1>To Do List:</h1>
+            <h1>TooDoo</h1>
 
             <!-- Sorting dropdown -->
             <form method="get" action="/" id="sort">
@@ -59,7 +59,11 @@
                             data-desc="{{ task[7] }}"
                             data-sub="{{ task[8] }}"
                             data-created="{{ task[9] }}">
-                            
+
+                            <div class="checkbox-stamp-wrapper">
+                                <input type="checkbox" class="task-check">
+                            </div>
+
                             <!-- Task label -->
                             <div class="task-label"><strong>{{ task[3] }}</strong></div>
                             <span class="line">|</span>
