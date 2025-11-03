@@ -19,6 +19,11 @@
     </head>
     <body class="homepage">
 
+<<<<<<< Updated upstream
+=======
+        <a href="{{ url_for('profile') }}" id="account-icon"><span class="material-symbols-outlined">account_circle</span></a>
+        
+>>>>>>> Stashed changes
         <!-- Header section: Title + Sorting + Add Task -->
         <div class="header">
             <h1>To Do List:</h1>
@@ -47,16 +52,16 @@
                     {% for task in tasks %}
                     <!-- Each task item -->
                         <li class="task 
-                            {% if task[1] == 1 %}high{% elif task[1] == 2 %}medium{% else %}low{% endif %}"
+                            {% if task[2] == 1 %}high{% elif task[2] == 2 %}medium{% else %}low{% endif %}"
                             data-id="{{ task[0] }}"
-                            data-priority="{{ task[1] }}"
-                            data-label="{{ task[2] }}"
-                            data-task="{{ task[3] }}"
-                            data-date="{{ task[4] }}"
-                            data-time="{{ task[5] }}"
-                            data-desc="{{ task[6] }}"
-                            data-sub="{{ task[7] }}"
-                            data-created="{{ task[8] }}">
+                            data-priority="{{ task[2] }}"
+                            data-label="{{ task[3] }}"
+                            data-task="{{ task[4] }}"
+                            data-date="{{ task[5] }}"
+                            data-time="{{ task[6] }}"
+                            data-desc="{{ task[7] }}"
+                            data-sub="{{ task[8] }}"
+                            data-created="{{ task[9] }}">
 
                             <!-- Priority symbols -->
                             <div class="priority-symbol">
@@ -70,21 +75,32 @@
                             </div>
 
                             <!-- Task label -->
-                            <div class="task-label"><strong>{{ task[2] }}</strong></div>
+                            <div class="task-label"><strong>{{ task[3] }}</strong></div>
                             <span class="line">|</span>
 
                             <!-- Task description and due date -->
                             <div class="task-info">
                                 <div class="task-details">
-                                    <span class="task-desc">{{ task[3] }} </span><br>
-                                    <span class="due-date">{{ task[4] | format_date }} | {{ task[5] | format_time }}</span>
+                                    <span class="task-desc">{{ task[4] }} </span><br>
+                                    <span class="due-date">{{ task[5] | format_date }} | {{ task[6] | format_time }}</span>
                                 </div>
                             </div>
 
                             <!-- Checkbox and timestamp -->
+<<<<<<< Updated upstream
                             <div class="checkbox-stamp-wrapper">
                                 <input type="checkbox" class="task-check">
                                 <span class="time-stamp"><em>Created on: {{ task[8] | format_timestamp }}</em></span>
+=======
+                            <div class="timestamp-prio">
+                                <div class="priority-symbol">
+                                {% if task[2] == 1 %}
+                                {% elif task[2] == 2 %}
+                                {% else %}
+                                {% endif %}
+                                </div>
+                                <span class="time-stamp"><em>Created on: {{ task[9] | format_timestamp }}</em></span>
+>>>>>>> Stashed changes
                             </div>
                         </li>
                     {% endfor %}

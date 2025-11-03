@@ -571,4 +571,27 @@ hr {
 #task-view-box.low {
   background-color: rgb(227, 227, 227); /* light green for Low */
   border-top: 6px solid #535d66;
+<<<<<<< Updated upstream
+=======
+}
+
+/* account icon */
+#account-icon {
+    color: black;
+    border: none;
+    background-color: transparent;
+    position: fixed;
+    top: 3%;
+    left: 95%;
+    cursor: pointer;
+}
+
+#account-icon .material-symbols-outlined{
+    font-size: 40px;
+}
+
+#account-icon .material-symbols-outlined:hover {
+    opacity: 0.9;
+    color: gray;
+>>>>>>> Stashed changes
 }
