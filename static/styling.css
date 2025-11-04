@@ -598,3 +598,65 @@ hr {
     opacity: 0.9;
     color: gray;
 }
+
+/* Floating profile box */
+.profile-box {
+    position: fixed;
+    top: 80px;
+    right: 40px;
+    width: 250px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    text-align: left;
+    z-index: 1000;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.profile-box h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.profile-box p {
+    margin: 8px 0;
+    color: #555;
+}
+
+/* Buttons inside profile box */
+.profile-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.profile-btn, .logout-btn {
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.profile-btn {
+    background-color: #007bff;
+}
+
+.profile-btn:hover {
+    background-color: #0056b3;
+}
+
+.logout-btn {
+    background-color: #dc3545;
+}
+
+.logout-btn:hover {
+    background-color: #b02a37;
+}
+
+.hidden {
+    display: none;
+}

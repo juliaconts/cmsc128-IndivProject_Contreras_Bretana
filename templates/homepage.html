@@ -19,8 +19,16 @@
     </head>
     <body class="homepage">
 
-        <a href="{{ url_for('profile') }}" id="account-icon"><span class="material-symbols-outlined">account_circle</span></a>
+        <div class="profile-container">
+            <a href="#" id="account-icon"><span class="material-symbols-outlined">account_circle</span></a>
+
+        <div id="profile-box" class="profile-box hidden">
+            <h3>Your Profile</h3>
+        </div>
+    
+        </div>
         
+
         <!-- Header section: Title + Sorting + Add Task -->
         <div class="header">
             <h1>TooDoo</h1>

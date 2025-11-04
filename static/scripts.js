@@ -407,3 +407,25 @@ function formatCreatedDateTime(createdStr) {
 
   return `${month}-${day}-${year} ${hour}:${minute} ${ampm}`;
 }
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const accountIcon = document.getElementById("account-icon");
+    const profileBox = document.getElementById("profile-box");
+
+    // Toggle floating box when clicking the <a>
+    accountIcon.addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent navigation
+        e.stopPropagation(); // Prevent bubbling
+        profileBox.classList.toggle("hidden");
+    });
+
+    // Hide when clicking outside
+    document.addEventListener("click", (e) => {
+        if (!profileBox.classList.contains("hidden") &&
+            !profileBox.contains(e.target) &&
+            !accountIcon.contains(e.target)) {
+            profileBox.classList.add("hidden");
+        }
+    });
+});
