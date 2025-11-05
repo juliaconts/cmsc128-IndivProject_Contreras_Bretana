@@ -134,6 +134,9 @@
     border-radius: 50%;
     width: 40rem;
     aspect-ratio: 1/1;
+    position: fixed;
+    top: 1rem;
+    right: 3rem;
 }
 #container-title {
     padding-top: 4rem;
@@ -199,6 +202,9 @@
     border-radius: 50%;
     width: 40rem;
     aspect-ratio: 1/1;
+    position: fixed;
+    top: 1rem;
+    right: 3rem;
 }
 #recovery-message {
     margin: .5rem 0;
@@ -241,7 +247,6 @@
     all: unset;
     color: #A8F1F1;
     text-decoration: underline;
-    font-weight: bold;
 }
 #remembered-pass a:hover {
     color: #77DFDF;
