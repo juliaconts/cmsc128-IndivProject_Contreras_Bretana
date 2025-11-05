@@ -18,14 +18,32 @@
 
     </head>
     <body class="homepage">
+        <div id="circle1-home"></div>
+        <div id="circle2-home"></div>
+        <div id="circle3-home"></div>
 
         <div class="profile-container">
-            <a href="#" id="account-icon"><span class="material-symbols-outlined">account_circle</span></a>
+            
+            <a href="#" id="account-icon">
+                <p id="your-profile">Your Profile</p>
+                <span class="material-symbols-outlined">contacts_product</span>
+            </a>
 
         <div id="profile-box" class="profile-box hidden">
             <h3>Your Profile</h3>
-        </div>
-    
+            <div class="profile-info">
+                <p><strong>Name:</strong> {{ user[3] }} {{ user[4] }}</p>
+                <p><strong>Username:</strong> {{ user[2] }}</p>
+                <p><strong>Email:</strong> {{ user[1] }}</p>
+            </div>
+            <div class="edit-logout">
+                <button id="openEditProfile" class="edit-btn">Edit Profile</button>
+
+                <form action="{{ url_for('logout') }}" method="get">
+                    <button type="submit" class="logout-btn">Log Out</button>
+                </form>    
+            </div>
+            
         </div>
         
 
@@ -119,7 +137,7 @@
                 <!-- Dynamic task details -->
                 <div id="task-details" class="hidden"></div>
 
-                 <!--New task form  -->
+                <!--New task form  -->
                 <form id="task-form" method="POST" action="{{ url_for('add') }}" class="hidden">
                     <h2>New Task</h2>
 
@@ -181,7 +199,40 @@
                     </div>
                     
                     <!-- Submit button -->
-                    <button class="create-btn" type="submit">CREATE</button>
+                    <button class="create-btn" type="submit">Add Task</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="editProfileModal">
+            <div class="edit-profile-container">
+                <h2>Edit Profile</h2>
+
+                <form method="POST" action="{{ url_for('profile') }}">
+                <div class="edit-elem">
+                    <label for="fname">First Name</label>
+                    <input type="text" name="fname" value="{{ user[3] }}" required>
+                </div>
+
+                <div class="edit-elem">
+                    <label for="lname">Last Name</label>
+                    <input type="text" name="lname" value="{{ user[4] }}" required>
+                </div>
+
+                <div class="edit-elem">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" value="{{ user[2] }}" required>
+                </div>
+
+                <div class="edit-elem">
+                    <label for="password">New Password (optional)</label>
+                    <input type="password" name="password" placeholder="Leave blank to keep current password">
+                </div>
+
+                <div class="edit-profile-buttons">
+                    <button type="submit">Save Changes</button>
+                    <button type="button" id="closeEditProfile">Cancel</button>
+                </div>
                 </form>
             </div>
         </div>
@@ -191,11 +242,31 @@
             <span id="toast-message"></span>
             <button id="undo-btn">Undo</button>
         </div>
-        
+
+        <script>
+  const openEditProfile = document.getElementById('openEditProfile');
+  const editProfileModal = document.getElementById('editProfileModal');
+  const closeEditProfile = document.getElementById('closeEditProfile');
+
+  openEditProfile.addEventListener('click', () => {
+    editProfileModal.style.display = 'flex';
+  });
+
+  closeEditProfile.addEventListener('click', () => {
+    editProfileModal.style.display = 'none';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === editProfileModal) {
+      editProfileModal.style.display = 'none';
+    }
+  });
+</script>
+
     </body>
 
     <script>
-            window.flashMessage = "{{ get_flashed_messages()[0] if get_flashed_messages() else '' }}";
+        window.flashMessage = "{{ get_flashed_messages()[0] if get_flashed_messages() else '' }}";
     </script>
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 

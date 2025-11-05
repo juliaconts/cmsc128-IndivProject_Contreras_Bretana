@@ -165,6 +165,7 @@ def home():
         return redirect(url_for("tasks_page"))
     else:
         return redirect(url_for("login"))
+    
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -173,7 +174,6 @@ def signup():
         username = request.form["username"]
         password = request.form["password"]
         hashed_password = hash_password(request.form["password"]) 
-        confirm_password = request.form["confirm_password"]
         fname = request.form["fname"]
         lname = request.form["lname"]
 
@@ -185,10 +185,7 @@ def signup():
 
         if existing_user:
             flash("Username or email already exists.", "error")
-            return redirect(url_for("signup"))
-        elif password != confirm_password:
-            error = "Passwords do not match."
-            return render_template("signup.html", error = error)
+            return redirect(url_for("login"))
         else:
             cursor.execute("INSERT INTO Accounts (email, username, fname, lname, password) VALUES (?, ?, ?, ?, ?)",
                         (email, username, fname, lname, hashed_password))
@@ -199,7 +196,7 @@ def signup():
         flash("Account created successfully! Please log in.", "success")
         return redirect(url_for("login"))
 
-    return render_template("signup.html")
+    return render_template("login.html")
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -209,7 +206,7 @@ def login():
     get_flashed_messages()
     if request.method == "POST":
         email = request.form["email"]
-        password = hash_password(request.form["password"])
+        password = hash_password(request.form.get("password", ""))
 
         user = get_user_email(email)
         if not user:
@@ -230,40 +227,6 @@ def login():
         return redirect(url_for("tasks_page"))
 
     return render_template("login.html")
-
-@app.route("/profile", methods=["GET", "POST"])
-def profile():
-    if "id" not in session:
-        return redirect(url_for("login"))
-
-    user_id = session["id"]
-    user = get_user_id(user_id)
-
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        fname = request.form.get("fname", "").strip()
-        lname = request.form.get("lname", "").strip()
-        password = request.form.get("password", "").strip()
-
-        if password:
-            password = hash_password(password)
-        else:
-            password = user[5]
-
-        conn = sqlite3.connect(DB_path)
-        cursor = conn.cursor()
-        cursor.execute("""
-            UPDATE Accounts
-            SET username = ?, fname = ?, lname = ?, password = ?
-            WHERE id = ?
-        """, (username, fname, lname, password, user_id))
-        conn.commit()
-        conn.close()
-
-        flash("Profile updated successfully!", "success")
-        return redirect(url_for("profile"))
-
-    return render_template("acctProfile.html", user=user)
 
 @app.route("/logout")
 def logout():
@@ -287,7 +250,7 @@ def recover():
     message = None
     error = None
     reset_mode = False
-    email = None
+    open_recovery = True 
 
     if request.method == "POST":
         action = request.form.get("action")
@@ -302,7 +265,7 @@ def recover():
 
             if user:
                 reset_mode = True
-                message = f"Email verified: {email}."
+                message = f"Email verified: {email}"
                 session['recover_email'] = email
             else:
                 error = "No account found with that email. Please try again."
@@ -317,7 +280,7 @@ def recover():
             elif new_password != confirm_password:
                 error = "Passwords do not match."
             else:
-                # Hash and update the password securely
+            
                 hashed = hashlib.sha256(new_password.encode()).hexdigest()
                 conn = sqlite3.connect(DB_path)
                 cur = conn.cursor()
@@ -325,10 +288,38 @@ def recover():
                 conn.commit()
                 conn.close()
                 session.pop('recover_email', None)
-                message = "Password successfully reset! You can now log in."
+                flash("Password successfully reset! You can now log in.", "success")
                 return redirect(url_for("login"))
 
-    return render_template("recover.html", message=message, error=error, reset_mode=reset_mode)
+
+    return render_template(
+        "login.html",
+        message=message,
+        error=error,
+        reset_mode=reset_mode,
+        open_recovery=open_recovery
+    )
+
+@app.route("/profile", methods=["GET", "POST"])
+def profile():
+    if "id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("login"))
+
+    user_id = session["id"]
+    user = get_user_id(user_id)
+
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        fname = request.form.get("fname", "").strip()
+        lname = request.form.get("lname", "").strip()
+        password = request.form.get("password", "").strip()
+
+        edit_profile(user_id, username, fname, lname, password)
+        flash("Profile updated successfully!", "success")
+        return redirect(url_for("profile"))
+
+    return render_template("homepage.html", user=user)
 
 # ----------------------
 # Tasks Routes
@@ -341,8 +332,9 @@ def tasks_page():
 
     user_id = session["id"]
     sort = request.args.get("sort", None)
+    user = get_user_id(user_id)  # [email, username, fname, lname] etc.
     tasks = get_tasks(user_id, sort)
-    return render_template("homepage.html", tasks=tasks, sort=sort, email=session.get("email"))
+    return render_template("homepage.html", user=user, tasks=tasks, sort=sort, email=session.get("email"))
 
 @app.route("/add", methods=["POST"])
 def add():
