@@ -51,7 +51,7 @@
             <h1>TooDoo</h1>
 
             <!-- Sorting dropdown -->
-            <form method="get" action="/" id="sort">
+            <form method="get" action="/tasks" id="sort">
                 <select name="sort" id="sorting" onchange="this.form.submit()">
                     <option value="" {% if not sort %}selected{% endif %}>Default</option>
                     <option value="priority" {% if sort=="priority" %}selected{% endif %}>Priority</option>
