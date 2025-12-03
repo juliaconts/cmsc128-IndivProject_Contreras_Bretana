@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages 
-import sqlite3, hashlib
+import sqlite3, hashlib, json
 from datetime import datetime, timedelta, timezone
 
 app = Flask(__name__)
@@ -21,7 +21,9 @@ def init_db():
             username VARCHAR(255) NOT NULL UNIQUE,
             fname TEXT NOT NULL,
             lname TEXT NOT NULL,
-            password VARCHAR(255) NOT NULL
+            password VARCHAR(255) NOT NULL,
+            sec_question TEXT,
+            sec_answer TEXT
         )
     ''')
     
@@ -176,6 +178,9 @@ def signup():
         hashed_password = hash_password(request.form["password"]) 
         fname = request.form["fname"]
         lname = request.form["lname"]
+        sec_question = request.form["sec_question"]
+        sec_answer_raw = request.form["sec_answer"]
+        sec_answer = hash_password(sec_answer_raw)
 
         conn = sqlite3.connect(DB_path)
         cursor = conn.cursor()
@@ -187,16 +192,21 @@ def signup():
             flash("Username or email already exists.", "error")
             return redirect(url_for("login"))
         else:
-            cursor.execute("INSERT INTO Accounts (email, username, fname, lname, password) VALUES (?, ?, ?, ?, ?)",
-                        (email, username, fname, lname, hashed_password))
+            cursor.execute("INSERT INTO Accounts (email, username, fname, lname, password, sec_question, sec_answer) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        (email, username, fname, lname, hashed_password, sec_question, sec_answer))
             
         conn.commit()
+
+        user_id = cursor.lastrowid
         conn.close()
+
+        session["id"] = user_id
+        session["email"] = email
 
         flash("Account created successfully! Please log in.", "success")
         return redirect(url_for("login"))
 
-    return render_template("login.html")
+    return render_template("homepage.html")
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -247,16 +257,19 @@ def edit_account(id):
 
 @app.route("/recover", methods=["GET", "POST"])
 def recover():
+    stage = "email"   # email → question → reset
     message = None
     error = None
+    question = None
     reset_mode = False
     open_recovery = True 
 
     if request.method == "POST":
-        action = request.form.get("action")
+        stage = request.form.get("action")
 
-        if action == "check_email":
-            email = request.form["email"]
+        if stage == "check_email":
+            email = request.form["email"]  
+
             conn = sqlite3.connect(DB_path)
             cur = conn.cursor()
             cur.execute("SELECT * FROM Accounts WHERE email = ?", (email,))
@@ -264,36 +277,68 @@ def recover():
             conn.close()
 
             if user:
-                reset_mode = True
                 message = f"Email verified: {email}"
-                session['recover_email'] = email
-            else:
-                error = "No account found with that email. Please try again."
+                session["recover_email"] = email
 
-        elif action == "reset_password":
+                question = user[6]   # security question
+                stage = "question"   # go to security question stage
+            else:
+                flash("No account found with that email. Please try again.", "error") 
+                stage = "email"
+
+        elif stage == "check_answer":
+            email = session.get("recover_email")
+            answer = request.form["sec_answer"]
+
+            user = get_user_email(email)
+
+            if not user:
+                error = "Session expired. Please try again."
+                stage = "email"
+            else:
+                stored_answer = user[7]  # stored hash
+
+                if stored_answer != hash_password(answer):
+                    error = "Incorrect answer. Please try again."
+                    question = user[6]
+                    stage = "question"
+                else:
+                    # Correct answer, show password reset fields
+                    reset_mode = True
+                    stage = "reset"
+
+        elif stage == "reset_password":
             new_password = request.form["new_password"]
             confirm_password = request.form["confirm_password"]
-            email = session.get('recover_email')
+            email = session.get("recover_email")
 
             if not email:
                 error = "Session expired. Please verify your email again."
+                stage = "email"
             elif new_password != confirm_password:
                 error = "Passwords do not match."
+                stage = "reset"
+                reset_mode = True
             else:
-            
                 hashed = hashlib.sha256(new_password.encode()).hexdigest()
+
                 conn = sqlite3.connect(DB_path)
                 cur = conn.cursor()
-                cur.execute("UPDATE Accounts SET password = ? WHERE email = ?", (hashed, email))
+                cur.execute(
+                    "UPDATE Accounts SET password = ? WHERE email = ?",
+                    (hashed, email)
+                )
                 conn.commit()
                 conn.close()
-                session.pop('recover_email', None)
+
+                session.pop("recover_email", None)
                 flash("Password successfully reset! You can now log in.", "success")
                 return redirect(url_for("login"))
 
-
     return render_template(
         "login.html",
+        stage=stage,
+        question=question,
         message=message,
         error=error,
         reset_mode=reset_mode,
@@ -425,6 +470,19 @@ def format_timestamp(value, format="%m-%d-%Y | %I:%M %p"):
     except Exception as e:
         print("Timestamp parse error:", e, value)
         return value
+
+# after every request is processed and a response is created, this function runs before sending the response to the browser
+@app.after_request
+# modifies the HTTP headers of every page Flask sends
+def add_header(resp):
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0" 
+                            # do not store any copy of this webpage, browser check with server first before showing a cached page,
+                            # browser must not reuse old content without confirming with server, cached copy is immediately expired  
+    resp.headers["Pragma"] = "no-cache"
+                            # old version of disabling cache 
+    resp.headers["Expires"] = "0"
+                            # makes page expire immediately, always request a fresh one
+    return resp
 
 if __name__ == "__main__":
     init_db()

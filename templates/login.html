@@ -42,8 +42,8 @@
                         <button type="submit">Log In</button>
                     </div>
                 </form>
-                <p>Forgot your password? <a href="#" id="openRecovery">Recover here.</a></p>
-                <p>Don't have an account? <a href="#" id="openSignup">Sign Up</a></p>
+                <p>Don't have an account? <a href="#" id="openSignup">Sign up now!</a></p>
+                <p><a href="{{ url_for('recover')}}" id="openRecovery">Forgot your password?</a></p>
                 
             </div>
             <div id="name">
@@ -82,6 +82,20 @@
                             <input type="password" placeholder="Create Password" name="password" required>
                         </div>
 
+                        <div class="signup-elem">
+                            <select name="sec_question" required>
+                                <option value="" disabled selected>Select a security question</option>
+                                <option>What is you mother's maiden name?</option>
+                                <option>What was the name of your first pet?</option>
+                                <option>What city were you born in?</option>
+                                <option>What is your favorite teacher's name?</option>
+                            </select>
+                        </div>
+
+                        <div class="signup-elem">
+                            <input type="text" name="sec_answer" placeholder="Your answer" required>
+                        </div>
+
                         <button type="submit">Sign Up</button>
                         <p>Already have an account? <a href="#" id="backToLogin">Log In</a></p>
                     </div>
@@ -91,27 +105,25 @@
 
         <div class="modal-overlay" id="recoveryModal">
             <div class="recovery-container">
-                <div id="recovery-title"><p>Password Recovery</p></div>
-
-                <div id="recovery-message">
-                    {% if message %}
-                        <p>{{ message }}</p>
-                        <p>Please set a new password below.</p>
-                    {% else %}
-                        <p id="recovery-subtitle">Enter your email below to change your password.</p>
-                    {% endif %}
-                </div>
+                <div id="recovery-title"><p>Password Recovery</p></div> 
 
                 <form method="POST" action="{{ url_for('recover') }}">
                     <div id="recovery-field">
-                        {% if not reset_mode %}
+                        {% if stage == "email" %}
                             <input type="email" placeholder="Email" name="email" required>
-                            <button type="submit" name="action" value="check_email">Change Password</button>
-                        {% else %}
-                            <input type="password" placeholder="Enter new password" name="new_password" required>
-                            <input type="password" placeholder="Confirm new password" name="confirm_password" required>
-                            <button type="submit" name="action" value="reset_password">Set New Password</button>
+                            <button type="submit" name="action" value="check_email">Continue</button>
+
+                        {% elif stage == "question" %}
+                            <p><strong>Security Question:</strong> {{ question }}</p>
+                            <input type="text" name="sec_answer" placeholder="Your Answer" required>
+                            <button type="submit" name="action" value="check_answer">Submit Answer</button>
+
+                        {% elif stage == "reset" %}
+                            <input type="password" placeholder="New password" name="new_password" required>
+                            <input type="password" placeholder="Confirm password" name="confirm_password" required>
+                            <button type="submit" name="action" value="reset_password">Reset Password</button>
                         {% endif %}
+
                     </div>
                 </form>
 
@@ -160,4 +172,5 @@
     {% endif %}
     </body>
 </html>
+
 
