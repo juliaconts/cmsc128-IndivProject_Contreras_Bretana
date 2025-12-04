@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Meta and Page settings -->
+        <meta charset = "UTF-8">
+        <meta name = "author" content = "width=device-width, initial-scale=1.0">
+
+        <title>TooDoo</title>
+        <link rel="icon" type="image/x-icon" href="./Images/Icons/Icon.png">  
+
+        <!-- Fonts and Icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add,content_paste,gesture_select" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styling.css') }}">
+
+    </head>
+    <body class="homepage">
+        <div id="circle1-home"></div>
+        <div id="circle2-home"></div>
+        <div id="circle3-home"></div>
+
+        <div class="profile-container">
+            
+            <a href="#" id="account-icon">
+                <p id="your-profile">Your Profile</p>
+                <span class="material-symbols-outlined">contacts_product</span>
+            </a>
+
+        <div id="profile-box" class="profile-box hidden">
+            <h3>Your Profile</h3>
+            <div class="profile-info">
+                <p><strong>Name:</strong> {{ user[3] }} {{ user[4] }}</p>
+                <p><strong>Username:</strong> {{ user[2] }}</p>
+                <p><strong>Email:</strong> {{ user[1] }}</p>
+            </div>
+            <div class="edit-logout">
+                <button id="openEditProfile" class="edit-btn">Edit Profile</button>
+
+                <form action="{{ url_for('logout') }}" method="get">
+                    <button type="submit" class="logout-btn">Log Out</button>
+                </form>    
+            </div>
+            
+        </div>
+        
+
+        <!-- Header section: Title + Sorting + Add Task -->
+        <div class="header">
+            <h1>TooDoo</h1>
+
+            <!-- Sorting dropdown -->
+            <form method="get" action="/" id="sort">
+                <select name="sort" id="sorting" onchange="this.form.submit()">
+                    <option value="" {% if not sort %}selected{% endif %}>Default</option>
+                    <option value="priority" {% if sort=="priority" %}selected{% endif %}>Priority</option>
+                    <option value="due" {% if sort=="due" %}selected{% endif %}>Due Date</option>
+                    <option value="timestamp" {% if sort=="timestamp" %}selected{% endif %}>Date Added</option>
+                </select>
+            </form>
+            
+            <!-- Add task button -->
+            <button id="add-task" title="Click to + a new task"><span id="add-button" class="material-symbols-outlined">add</span>Add Task</button>
+        </div>
+        
+        <!-- Main Interface: Task List + Task View -->
+        <div class="main-interface">
+
+            <!-- Task list panel -->
+            <div id="task-box">
+                {% if tasks %}
+                    <ul>
+                    {% for task in tasks %}
+                    <!-- Each task item -->
+                        <li class="task 
+                            {% if task[2] == 1 %}high{% elif task[2] == 2 %}medium{% else %}low{% endif %}"
+                            data-id="{{ task[0] }}"
+                            data-priority="{{ task[2] }}"
+                            data-label="{{ task[3] }}"
+                            data-task="{{ task[4] }}"
+                            data-date="{{ task[5] }}"
+                            data-time="{{ task[6] }}"
+                            data-desc="{{ task[7] }}"
+                            data-sub="{{ task[8] }}"
+                            data-created="{{ task[9] }}">
+
+                            <div class="checkbox-stamp-wrapper">
+                                <input type="checkbox" class="task-check">
+                            </div>
+
+                            <!-- Task label -->
+                            <div class="task-label"><strong>{{ task[3] }}</strong></div>
+                            <span class="line">|</span>
+
+                            <!-- Task description and due date -->
+                            <div class="task-info">
+                                <div class="task-details">
+                                    <span class="task-desc">{{ task[4] }} </span><br>
+                                    <span class="due-date">{{ task[5] | format_date }} | {{ task[6] | format_time }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Checkbox and timestamp -->
+                            <div class="timestamp-prio">
+                                <div class="priority-symbol">
+                                {% if task[2] == 1 %}
+                                {% elif task[2] == 2 %}
+                                {% else %}
+                                {% endif %}
+                                </div>
+                                <span class="time-stamp"><em>Created on: {{ task[9] | format_timestamp }}</em></span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                    </ul>
+
+                {% else %}
+                    <!-- Empty task prompt -->
+                    <div class="empty-prompt">
+                        <span class="material-symbols-outlined">content_paste</span>
+                        <p>No tasks to accomplish</p>
+                    </div>
+                {% endif %}  
+            </div>
+
+            <!-- Task view panel: Task details + Empty state + New task form -->
+            <div id="task-view-box">
+
+                <!-- Empty view state -->
+                <div id="empty-view" class="empty-view">
+                    <span class="material-symbols-outlined">gesture_select</span>
+                    <p>No task selected</p>
+                </div>
+
+                <!-- Dynamic task details -->
+                <div id="task-details" class="hidden"></div>
+
+                <!--New task form  -->
+                <form id="task-form" method="POST" action="{{ url_for('add') }}" class="hidden">
+                    <h2>New Task</h2>
+
+                    <div id="task-header">
+
+                        <!-- Priority Selection -->
+                        <div id="prio-select">
+                            <label><strong>Priority Level:</strong></label><br>
+                            <input type="radio" name="priority" value=1 required> High Priority
+                            <input type="radio" name="priority" value=2 required> Mid Priority
+                            <input type="radio" name="priority" value=3 required> Low Priority 
+                        </div>
+
+                        <!-- Label input -->
+                        <div id="label">
+                            <label><strong>Label</strong></label> 
+                            <br>
+                            <input type="text" name="label" placeholder="Enter a course/custom"><br>
+                        </div>
+
+                        <!-- Task name input -->
+                        <div id="to-do-title">
+                            <label><strong>Task Name</strong></label>
+                            <br>
+                            <input type="text" name="task_name" placeholder="Enter to-do"><br>
+                        </div>
+
+                        <!-- Deadline input -->
+                        <span class="dl-label"><strong>Deadline</strong></span>
+                        <div id="deadline">
+                            <label>Date:</label>
+                            <input type="date" name="date" placeholder="mm/dd/yyyy"><br>
+
+                            <label>Time:</label>
+                            <input type="time" name="time"><br>
+                        </div>
+                    </div>
+
+                    <!-- Description input -->
+                    <div id="desc-label">
+                        <label><strong>Description</strong></label>
+                        <br>
+                        <textarea name="task_desc" placeholder="Enter task description..."></textarea><br>
+                    </div>
+
+                    <!-- sub-todo toggle -->
+                    <label class="switch-label">
+                        <strong>Add sub to-do(s)</strong>
+                        <label class="switch" title="Toggle sub to-dos">
+                            <input type="checkbox" id="toggle-sub">
+                            <span class="slider"></span>
+                        </label>
+                    </label>
+
+                    <!-- sub-todo input -->
+                    <div id="sub-task-box" class="sub-box" aria-hidden="true">
+                        <label>Sub To-dos:</label>
+                        <input type="text" name="sub_todo" placeholder="Enter sub-tasks"><br>
+                    </div>
+                    
+                    <!-- Submit button -->
+                    <button class="create-btn" type="submit">Add Task</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="editProfileModal">
+            <div class="edit-profile-container">
+                <h2>Edit Profile</h2>
+
+                <form method="POST" action="{{ url_for('profile') }}">
+                <div class="edit-elem">
+                    <label for="fname">First Name</label>
+                    <input type="text" name="fname" value="{{ user[3] }}" required>
+                </div>
+
+                <div class="edit-elem">
+                    <label for="lname">Last Name</label>
+                    <input type="text" name="lname" value="{{ user[4] }}" required>
+                </div>
+
+                <div class="edit-elem">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" value="{{ user[2] }}" required>
+                </div>
+
+                <div class="edit-elem">
+                    <label for="password">New Password (optional)</label>
+                    <input type="password" name="password" placeholder="Leave blank to keep current password">
+                </div>
+
+                <div class="edit-profile-buttons">
+                    <button type="submit">Save Changes</button>
+                    <button type="button" id="closeEditProfile">Cancel</button>
+                </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Toast notification -->
+        <div id="toast" class="toast hidden">
+            <span id="toast-message"></span>
+            <button id="undo-btn">Undo</button>
+        </div>
+
+        <script>
+  const openEditProfile = document.getElementById('openEditProfile');
+  const editProfileModal = document.getElementById('editProfileModal');
+  const closeEditProfile = document.getElementById('closeEditProfile');
+
+  openEditProfile.addEventListener('click', () => {
+    editProfileModal.style.display = 'flex';
+  });
+
+  closeEditProfile.addEventListener('click', () => {
+    editProfileModal.style.display = 'none';
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === editProfileModal) {
+      editProfileModal.style.display = 'none';
+    }
+  });
+</script>
+
+    </body>
+
+    <script>
+        window.flashMessage = "{{ get_flashed_messages()[0] if get_flashed_messages() else '' }}";
+    </script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+
+</html>

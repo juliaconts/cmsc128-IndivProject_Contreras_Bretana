@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset = "UTF-8">
+        <meta name= "author" content = "width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add,content_paste,gesture_select" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='account-styling.css') }}">
+        <title>Login</title>
+    </head>
+
+    <body class="login">
+        <div class="page-container">
+            <div id="circle1-login"></div>
+            <div id="circle2-login"></div>
+            <div id="circle3-login"></div>
+            <div id="login-container">
+                <p id="login-text">Let's get to work!</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    <ul style="list-style:none; padding:0;">
+                        {% for category, message in messages %}
+                        <li>
+                            {{ message }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div id="login-field">
+                        <input type="email" placeholder="Enter your email" name="email" required>
+
+                        <input type="password" placeholder="Enter your password" name="password" required>
+
+                        <button type="submit">Log In</button>
+                    </div>
+                </form>
+                <p>Don't have an account? <a href="#" id="openSignup">Sign up now!</a></p>
+                <p><a href="{{ url_for('recover')}}" id="openRecovery">Forgot your password?</a></p>
+                
+            </div>
+            <div id="name">
+                <p id="title">TooDoo</p>
+                <p id="subtitle">Your favorite to-do list app!</p>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="signupModal">
+            <div class="signup-container">
+                <p id="container-title">Create an Account</p>
+                <form method="POST" action="{{ url_for('signup') }}">
+                    <div id="signup-field">
+                        <div class="signup-elem">
+                            <label for="fname">First Name</label>
+                            <input type="text" placeholder="Enter First Name" name="fname" required>
+                        </div>
+
+                        <div class="signup-elem">
+                            <label for="lname">Last Name</label>
+                            <input type="text" placeholder="Enter Last Name" name="lname" required>
+                        </div>
+
+                        <div class="signup-elem">
+                            <label for="username">Username</label>
+                            <input type="text" placeholder="Enter Username" name="username" required>
+                        </div>
+
+                        <div class="signup-elem">
+                            <label for="email">Email</label>
+                            <input type="email" placeholder="Enter Email" name="email" required>
+                        </div>
+
+                        <div class="signup-elem">
+                            <label for="password">Password</label>
+                            <input type="password" placeholder="Create Password" name="password" required>
+                        </div>
+
+                        <div class="signup-elem">
+                            <select name="sec_question" required>
+                                <option value="" disabled selected>Select a security question</option>
+                                <option>What is you mother's maiden name?</option>
+                                <option>What was the name of your first pet?</option>
+                                <option>What city were you born in?</option>
+                                <option>What is your favorite teacher's name?</option>
+                            </select>
+                        </div>
+
+                        <div class="signup-elem">
+                            <input type="text" name="sec_answer" placeholder="Your answer" required>
+                        </div>
+
+                        <button type="submit">Sign Up</button>
+                        <p>Already have an account? <a href="#" id="backToLogin">Log In</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="recoveryModal">
+            <div class="recovery-container">
+                <div id="recovery-title"><p>Password Recovery</p></div> 
+
+                <form method="POST" action="{{ url_for('recover') }}">
+                    <div id="recovery-field">
+                        {% if stage == "email" %}
+                            <input type="email" placeholder="Email" name="email" required>
+                            <button type="submit" name="action" value="check_email">Continue</button>
+
+                        {% elif stage == "question" %}
+                            <p><strong>Security Question:</strong> {{ question }}</p>
+                            <input type="text" name="sec_answer" placeholder="Your Answer" required>
+                            <button type="submit" name="action" value="check_answer">Submit Answer</button>
+
+                        {% elif stage == "reset" %}
+                            <input type="password" placeholder="New password" name="new_password" required>
+                            <input type="password" placeholder="Confirm password" name="confirm_password" required>
+                            <button type="submit" name="action" value="reset_password">Reset Password</button>
+                        {% endif %}
+
+                    </div>
+                </form>
+
+                <div id="recovery-message">
+                    {% if error %}
+                        <p>{{ error }}</p>
+                    {% endif %}
+                </div>
+
+                <div id="remembered-pass">
+                    <p>Remembered your password? <a href="#" id="backToLoginFromRecovery">Log In</a></p>
+                </div>
+            </div>
+
+    </div>
+        
+
+    <script>
+        const openSignup = document.getElementById('openSignup');
+        const openRecovery = document.getElementById('openRecovery');
+        const signupModal = document.getElementById('signupModal');
+        const recoveryModal = document.getElementById('recoveryModal');
+        const backToLogin = document.getElementById('backToLogin');
+        const backToLoginFromRecovery = document.getElementById('backToLoginFromRecovery');
+
+        openSignup.addEventListener('click', () => signupModal.style.display = 'flex');
+        backToLogin.addEventListener('click', () => signupModal.style.display = 'none');
+
+        openRecovery.addEventListener('click', () => recoveryModal.style.display = 'flex');
+        backToLoginFromRecovery.addEventListener('click', () => recoveryModal.style.display = 'none');
+
+        window.addEventListener('click', (e) => {
+            if (e.target === signupModal) signupModal.style.display = 'none';
+            if (e.target === recoveryModal) recoveryModal.style.display = 'none';
+        });
+    </script>
+    {% if open_recovery %}
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                const recoveryModal = document.getElementById('recoveryModal');
+                if (recoveryModal) {
+                    recoveryModal.style.display = 'flex';
+                }
+            });
+        </script>
+    {% endif %}
+    </body>
+</html>
+
+

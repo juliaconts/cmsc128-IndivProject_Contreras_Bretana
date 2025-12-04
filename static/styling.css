@@ -1,0 +1,817 @@
+
+* {
+    font-family: Nunito, sans-serif;
+    z-index: 9;
+}
+.homepage {
+    background-color: #DFFDFD;
+}
+#circle1-home {
+    z-index: 1;
+    background-color: #2EA7A7;
+    position:fixed;
+    border-radius: 50%;
+    width: 30rem;
+    aspect-ratio: 1/1;
+    top: -15rem;
+    left: -9rem;
+}
+#circle2-home {
+    z-index: 1;
+    background-color: #4FC7C7;
+    position:fixed;
+    border-radius: 50%;
+    width: 17rem;
+    aspect-ratio: 1/1;
+    top: -8rem;
+    left: 9rem;
+}
+#circle3-home {
+    z-index: 1;
+    background-color: #A8F1F1;
+    position:fixed;
+    border-radius: 50%;
+    width: 9rem;
+    aspect-ratio: 1/1;
+    top: 1rem;
+    left: 19rem;
+}
+
+/* Header and title */
+.header {
+    display: flex;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+h1 {
+    margin-left: 3%;
+    margin-bottom: 1%;
+    font-size: 45px;
+    color: white;
+}
+
+#sort {
+    margin-left: 31.5%;
+}
+
+#sorting {
+    height: 36px;
+    width: 115px;
+    margin-top: 27px;
+    margin-left: 107px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 25px;
+    padding-left: .25rem;
+}
+
+/* Add task button */
+#add-task {
+    margin-top: 2%;
+    margin-left: 0.5%;
+    display: inline-flex;          /* flexbox for icon + text */
+    align-items: center;           /* vertical centering */
+    gap: 6px;                      /* space between + and text */
+    height: 36px;                  /* adjust to your design */
+    padding: 0 12px;               /* horizontal padding */
+    background-color: #2EA7A7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 25px;
+}
+
+#add-task .material-symbols-outlined {
+    font-size: 20px;
+    line-height: 1;
+}
+
+#add-task:hover {
+    background-color: #4FC7C7;
+    cursor: pointer; 
+}
+
+/* Main interface */
+.main-interface {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: -10px;
+    margin-right: 29%;
+    gap: 35px;
+}
+
+#task-box {
+    /* box-sizing: border-box;
+    border: 1px solid black; */
+    width: 1000px;
+    height: 600px;
+}
+#task-box li {
+    border-top: 1px solid #4FC7C7;
+    border-bottom: 1px solid #4FC7C7;
+    border-left: 1px solid #4FC7C7;
+}
+
+/* Empty prompts */
+.empty-prompt {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.empty-prompt p {
+    margin: 0px;
+}
+
+.empty-prompt .material-symbols-outlined {
+    font-size: 100px;
+    opacity: 0.6;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0px;
+}
+
+/* task view box */
+#task-view-box {
+    background-color: #77DFDF;
+    box-sizing: border-box;
+    border: 1px solid #2EA7A7;
+    border-radius: 25px;
+    width: 400px;
+    height: 600px;
+    position: fixed;
+    /* top: 13%; */
+    top: 11.5%;
+    left: 71.5%;
+}
+
+.empty-view {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.empty-view .material-symbols-outlined{
+    font-size: 60px;
+    opacity: 0.6;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0px;
+}
+
+.empty-view p {
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+.dim {
+    box-shadow: 0 0 0 1080px rgba(0, 0, 0, .3);
+    background-color: #f8f8f8;                /* slightly lighter background */
+    transition: all 0.2s ease-in-out;        /* smooth transition */
+}
+
+/* Task list (Left Side) */
+ul {
+    padding-left: 20px;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid black;
+    width: 948px;
+    list-style-type: none;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.priority-symbol {
+    font-size: 30px;
+}
+
+.task-label {
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+/* Priority symbol + task label in one row */
+.priority-symbol,
+.task-label {
+    display: flex;
+    align-items: center;
+    margin-right: 5px;
+}
+
+.line {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 35px;
+}
+
+/* Priority-specific left border colors */
+li.high {
+    border-right: 15px solid #e74c3c; /* red */
+}
+li.medium {
+    border-right: 15px solid #f39c12; /* orange */
+}
+li.low {
+    border-right: 15px solid #535d66;
+}
+
+/* Task text area */
+.task-info {
+    flex: 1;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.task-desc {
+    font-weight: bold;
+    color: #555;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.due-date {
+    font-size: 0.9rem;
+    color: red;
+}
+
+/* Checkbox and timestamp (Task list)*/
+.task-check {
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    accent-color: #2ecc71;
+    border-radius: 50%;
+    border: 2px solid #4FC7C7;
+}
+.task-check:checked {
+    background-color: #4FC7C7;
+    border-color: #4FC7C7;
+}
+
+
+.checkbox-stamp-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;  /* centers text under checkbox */
+    margin-left: 1px;    /* spacing from task details */
+    margin-right: 10px;
+
+}
+
+.time-stamp {
+    font-size: 10px;     /* make timestamp smaller */
+    color: gray;
+}
+
+/* Task view (Right Side) */
+#header {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid gray;
+    align-items: center;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 8%;
+    gap: 95px;
+}
+
+hr {
+    margin-top: 3%;
+}
+
+#header span {
+    margin-top: 3%;
+    margin-bottom: 2%;
+}
+
+.task-todo {
+    font-size: 30px;
+    margin: 0px;
+    margin-left: 6%;
+    margin-top: 3%;
+}
+
+#details {
+    margin-top: 3%;
+    margin-left: 6%;
+    font-size: 18px;
+}
+
+#footer {
+    border-top: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 45%;
+}
+
+#footer span {
+    margin-top: 4%;
+    margin-left: 5%;
+    margin-right: 7%;
+    font-size: 14px;
+}
+
+#edit-task-btn, #delete-task-btn {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    margin-top: 2%;
+}
+
+#delete-task-btn {
+    margin-right: 12px;
+}
+
+#delete-task-btn .material-symbols-outlined {
+    color: red;
+}
+
+#delete-task-btn .material-symbols-outlined:hover {
+    color: darkred;
+    opacity: 0.9;
+}
+
+#edit-task-btn {
+    margin-right: 5px;
+}
+
+#edit-task-btn .material-symbols-outlined:hover {
+    color: gray;
+    opacity: 0.9;
+}
+
+#edit-task-btn .material-symbols-outlined, #delete-task-btn .material-symbols-outlined {
+    font-size: 35px;
+}
+
+/* toast message design */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 5px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+.toast.hidden {
+  display: none;
+}
+
+/* Completed tasks */
+.task.completed {
+    background-color: #DFFDFD;
+    border-top: 1px solid #4FC7C7;
+    border-bottom: 1px solid #4FC7C7;
+    border-left: 5px solid #4FC7C7;
+}
+
+.task.completed .task-desc {
+    text-decoration: line-through;
+    color: #155724;
+}
+
+/* Add task form */
+#task-form h2 {
+    text-align: center;
+    padding-right: 20px;
+    padding-top: 5px;
+}
+#task-form input, #task-form textarea, #task-details input, #task-details textarea {
+    border-radius: 25px;
+}
+#task-header {
+    margin-bottom: 3%;
+    border-bottom: 1px solid black;
+}
+
+#prio-select {
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+#prio-select input[type="radio"]{
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#to-do-title {
+    display: block;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+#to-do-title input[type="text"]{
+    margin-left: 2px;
+    margin-top: 5px;
+    padding-left: 0.9%;
+    width: 90%;
+    height: 25px;
+    margin-bottom: 10px;
+}
+
+#label {
+    display: block;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+#label input[type="text"]{
+    margin-left: 2px;
+    margin-top: 5px;
+    padding-left: 0.9%;
+    width: 90%;
+    height: 25px;
+}
+
+.dl-label {
+    margin-left: 5%;
+}
+
+#deadline {
+    display: flex;
+    justify-content: left;
+    margin-left: 1.25rem;
+    margin-top: 7px;
+    margin-bottom: 3%;
+}
+#deadline input {
+    width: 7.25rem;
+}
+#deadline input[type="date"]{
+    margin-right: 20px;
+}
+
+#deadline input[type="date"], input[type="time"]{
+    margin-left: 5px;
+}
+
+#desc-label {
+    margin: 0;
+}
+
+#desc-label textarea {
+    resize: none;
+    width: 90%;
+    height: 70px;
+    margin-top: 2%;
+    padding: 1rem;
+}
+
+/* Sub-task toggle */
+.switch-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  margin-left: 5%;
+  margin-top: 2%;
+}
+
+/* Switch base */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+}
+
+/* Hide the default checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider background */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .3s;
+  border-radius: 24px;
+}
+
+/* Toggle knob */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; 
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #DFFDFD;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+/* When checked */
+.switch input:checked + .slider {
+  background-color: #4FC7C7; /* matches your blue theme */
+}
+
+.switch input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+#sub-task-box {
+    display: none;
+    position: absolute;
+    margin-left: 1.25rem;
+    margin-top: 5px;
+}
+
+.create-btn {
+    margin-top: 2rem;
+    margin-left: 66.5%;
+    align-content: center;
+    padding: 10px;
+    width: 110px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 25px;
+    background-color: #2EA7A7;
+    border: none;
+    color: white;
+}
+.create-btn:hover {
+    background-color: #4FC7C7;
+}
+#save-changes {
+    align-content: center;
+    padding: 10px;
+    width: 110px;
+    font-size: .65rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 25px;
+    background-color: #2EA7A7;
+    border: none;
+    color: white;
+}
+#save-changes:hover {
+    background-color: #4FC7C7;
+    cursor: pointer;
+}
+/* Edit task form */
+.edit-task {
+    text-align: center;
+    margin: 5%;
+}
+
+#edit-prio-select {
+    margin-top: 10px;
+    margin-left: 15px;
+}
+
+#save-cancel-btns {
+    margin-top: 1rem;
+    margin-right: 6%;
+    display: flex;
+    justify-content: end;
+}
+
+#save-changes, #cancel-edit {
+    cursor: pointer;
+}
+
+#cancel-edit {
+    border: none;
+    background-color: transparent;
+}
+
+#cancel-edit .material-symbols-outlined {
+    font-size: 40px;
+    color: red;
+}
+
+#cancel-edit .material-symbols-outlined:hover {
+    color: darkred;
+    opacity: 0.9;
+}
+
+/* task-view-box color for every priority */
+#task-view-box {
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+/* Priority-based colors */
+#task-view-box.high {
+  background-color: white; /* light red for High */
+  border-top: 6px solid #ff4d4d;
+}
+
+#task-view-box.medium {
+  background-color: white; /* light orange for Medium */
+  border-top: 6px solid #ffb84d;
+}
+
+#task-view-box.low {
+    background-color: white; /* light green for Low */
+    border-top: 6px solid #535d66;
+}
+
+#desc-label {
+    margin: 0 1.25rem;
+}
+/* account icon */
+#your-profile {
+    position: fixed;
+    width: fit-content;
+    right: 5.5rem;
+    color: #2EA7A7;
+    font-weight: bold;
+    margin-top: 1.5rem;
+}
+#account-icon {
+    color: #2EA7A7;
+    border: none;
+    background-color: transparent;
+    position: fixed;
+    top: 3%;
+    right: 2.5rem;
+    cursor: pointer;
+}
+
+#account-icon .material-symbols-outlined{
+    font-size: 3rem;
+}
+
+#account-icon:hover {
+    opacity: 0.9;
+    color: #4FC7C7;
+}
+
+/* Floating profile box */
+.profile-box {
+    position: fixed;
+    top: 80px;
+    right: 40px;
+    width: 250px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    text-align: left;
+    z-index: 1000;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.profile-box h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.profile-box p {
+    margin: 8px 0;
+    color: #555;
+}
+
+/* Buttons inside profile box */
+.profile-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+.edit-logout {
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+}
+.logout-btn, .edit-btn {
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 25px;
+    color: white;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.logout-btn, .edit-btn {
+    background-color: #2EA7A7;
+    border: none;
+}
+
+.logout-btn:hover, .edit-btn:hover {
+    background-color: #4FC7C7;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Edit Profile */
+.profile-page-container {
+    padding: .5rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+}
+#profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    margin-top: 1rem;
+}
+#profile-field form {
+    gap: .75rem;
+}
+
+.modal-overlay {
+    display: none; /* hidden by default */
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.edit-profile-container {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 20px;
+    width: 350px;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+}
+
+.edit-elem {
+    margin-bottom: 1rem;
+}
+.edit-elem label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    padding-left: .25rem;
+}
+.edit-elem input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+}
+
+.edit-profile-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.edit-profile-buttons button {
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+}
+.edit-profile-buttons button[type="submit"] {
+    background-color: #2EA7A7;
+    color: white;
+}
+.edit-profile-buttons button[type="submit"]:hover {
+    background-color: #4FC7C7;
+}
+.edit-profile-buttons #closeEditProfile {
+    background-color: #ccc;
+}
+.edit-profile-buttons #closeEditProfile:hover {
+    background-color: #d6d6d6;
+}
+
+
