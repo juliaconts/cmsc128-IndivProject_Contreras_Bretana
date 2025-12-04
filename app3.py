@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, get_flashed_messages 
-import sqlite3, hashlib, json
+import sqlite3, hashlib
 from datetime import datetime, timedelta, timezone
 
 app = Flask(__name__)
@@ -99,18 +99,16 @@ def get_tasks(user_id, sort_by=None):
     conn = sqlite3.connect(DB_path)
     cursor = conn.cursor()
 
-    # Defensive fix: ensure sort_by is either None or a valid keyword
-    if sort_by in (None, "", "None"):
-        cursor.execute("SELECT * FROM Tasks WHERE user_id=?", (user_id,))
-    elif sort_by == "priority":
-        cursor.execute("SELECT * FROM Tasks WHERE user_id=? ORDER BY priority ASC", (user_id,))
-    elif sort_by == "due":
-        cursor.execute("SELECT * FROM Tasks WHERE user_id=? ORDER BY date ASC, time ASC", (user_id,))
-    elif sort_by == "timestamp":
-        cursor.execute("SELECT * FROM Tasks WHERE user_id=? ORDER BY created_at DESC", (user_id,))
-    else:
-        cursor.execute("SELECT * FROM Tasks WHERE user_id=?", (user_id,))
+    query = "SELECT * FROM Tasks WHERE user_id=?"
 
+    if sort_by == "priority":
+        query += " ORDER BY CAST(priority AS INTEGER) ASC"
+    elif sort_by == "due":
+        query += " ORDER BY date ASC, time ASC"
+    elif sort_by == "timestamp":
+        query += " ORDER BY datetime(created_at) DESC"
+
+    cursor.execute(query, (user_id,))
     tasks = cursor.fetchall()
     conn.close()
     return tasks
@@ -207,6 +205,7 @@ def signup():
         return redirect(url_for("login"))
 
     return render_template("homepage.html")
+
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -376,7 +375,11 @@ def tasks_page():
         return redirect(url_for("login"))
 
     user_id = session["id"]
-    sort = request.args.get("sort", None)
+    sort = request.args.get("sort")
+
+    if sort not in ("priority", "due", "timestamp"):
+        sort = None
+
     user = get_user_id(user_id)  # [email, username, fname, lname] etc.
     tasks = get_tasks(user_id, sort)
     return render_template("homepage.html", user=user, tasks=tasks, sort=sort, email=session.get("email"))
@@ -470,7 +473,7 @@ def format_timestamp(value, format="%m-%d-%Y | %I:%M %p"):
     except Exception as e:
         print("Timestamp parse error:", e, value)
         return value
-
+    
 # after every request is processed and a response is created, this function runs before sending the response to the browser
 @app.after_request
 # modifies the HTTP headers of every page Flask sends
@@ -486,4 +489,4 @@ def add_header(resp):
 
 if __name__ == "__main__":
     init_db()
-    app.run()
+    app.run(debug=True)
