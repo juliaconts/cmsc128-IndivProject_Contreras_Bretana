@@ -32,7 +32,7 @@
         <div id="profile-box" class="profile-box hidden">
             <h3>Your Profile</h3>
             <div class="profile-info">
-                <p><strong>Name:</strong> {{ user[3] }} {{ user[4] }}</p>
+                <p><strong>Name:</strong> {{ user[3] }}</p>
                 <p><strong>Username:</strong> {{ user[2] }}</p>
                 <p><strong>Email:</strong> {{ user[1] }}</p>
             </div>
@@ -210,13 +210,8 @@
 
                 <form method="POST" action="{{ url_for('profile') }}">
                 <div class="edit-elem">
-                    <label for="fname">First Name</label>
-                    <input type="text" name="fname" value="{{ user[3] }}" required>
-                </div>
-
-                <div class="edit-elem">
-                    <label for="lname">Last Name</label>
-                    <input type="text" name="lname" value="{{ user[4] }}" required>
+                    <label for="fullname">Name</label>
+                    <input type="text" name="fullname" value="{{ user[3] }}" required>
                 </div>
 
                 <div class="edit-elem">
@@ -244,30 +239,48 @@
         </div>
 
         <script>
-  const openEditProfile = document.getElementById('openEditProfile');
-  const editProfileModal = document.getElementById('editProfileModal');
-  const closeEditProfile = document.getElementById('closeEditProfile');
+            const openEditProfile = document.getElementById('openEditProfile');
+            const editProfileModal = document.getElementById('editProfileModal');
+            const closeEditProfile = document.getElementById('closeEditProfile');
 
-  openEditProfile.addEventListener('click', () => {
-    editProfileModal.style.display = 'flex';
-  });
+            openEditProfile.addEventListener('click', () => {
+                editProfileModal.style.display = 'flex';
+            });
 
-  closeEditProfile.addEventListener('click', () => {
-    editProfileModal.style.display = 'none';
-  });
+            closeEditProfile.addEventListener('click', () => {
+                editProfileModal.style.display = 'none';
+            });
 
-  window.addEventListener('click', (e) => {
-    if (e.target === editProfileModal) {
-      editProfileModal.style.display = 'none';
-    }
-  });
-</script>
+            window.addEventListener('click', (e) => {
+                if (e.target === editProfileModal) {
+                editProfileModal.style.display = 'none';
+                }
+            });
+        </script>
 
     </body>
 
     <script>
         window.flashMessage = "{{ get_flashed_messages()[0] if get_flashed_messages() else '' }}";
     </script>
+
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+
+    <script>
+    // If the user tries to go back, force reload and check session
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                // Page was loaded from cache (back button)
+                window.location.replace("{{ url_for('login') }}");
+            }
+        });
+
+        if (window.history && window.history.pushState) {
+            window.history.pushState(null, null, window.location.href);
+            window.addEventListener('popstate', function() {
+                window.location.replace("{{ url_for('login') }}");
+            });
+        }
+    </script>
 
 </html>

@@ -19,8 +19,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email VARCHAR(255) NOT NULL UNIQUE,
             username VARCHAR(255) NOT NULL UNIQUE,
-            fname TEXT NOT NULL,
-            lname TEXT NOT NULL,
+            fullname TEXT NOT NULL,
             password VARCHAR(255) NOT NULL,
             sec_question TEXT,
             sec_answer TEXT
@@ -39,6 +38,7 @@ def init_db():
             task_desc TEXT,
             sub_todo TEXT,
             created_at TEXT,
+            completed INTEGER DEFAULT 0,
             FOREIGN KEY (user_id) REFERENCES Accounts(id)
         )
     ''')
@@ -63,22 +63,22 @@ def get_user_email(email):
         cursor.execute("SELECT * FROM Accounts WHERE email = ?", (email,))
         return cursor.fetchone()
     
-def edit_profile(id, username, fname, lname, password):
+def edit_profile(id, username, fullname, password):
     conn = sqlite3.connect(DB_path)
     cursor = conn.cursor()
     if password:
         password = hash_password(password)
         cursor.execute('''
             UPDATE Accounts
-            SET username = ?, fname = ?, lname = ?, password = ?
+            SET username = ?, fullname = ?, password = ?
             WHERE id = ?
-        ''', (username, fname, lname, password, id))
+        ''', (username, fullname, password, id))
     else:
         cursor.execute('''
             UPDATE Accounts
-            SET username = ?, fname = ?, lname = ?
+            SET username = ?, fullname = ?
             WHERE id = ?
-        ''', (username, fname, lname, id))
+        ''', (username, fullname, id))
 
     conn.commit()
     conn.close()
@@ -172,10 +172,9 @@ def signup():
     if request.method == "POST":
         email = request.form["email"]
         username = request.form["username"]
+        fullname = request.form["fullname"]
         password = request.form["password"]
         hashed_password = hash_password(request.form["password"]) 
-        fname = request.form["fname"]
-        lname = request.form["lname"]
         sec_question = request.form["sec_question"]
         sec_answer_raw = request.form["sec_answer"]
         sec_answer = hash_password(sec_answer_raw)
@@ -190,8 +189,8 @@ def signup():
             flash("Username or email already exists.", "error")
             return redirect(url_for("login"))
         else:
-            cursor.execute("INSERT INTO Accounts (email, username, fname, lname, password, sec_question, sec_answer) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                        (email, username, fname, lname, hashed_password, sec_question, sec_answer))
+            cursor.execute("INSERT INTO Accounts (email, username, fullname, password, sec_question, sec_answer) VALUES (?, ?, ?, ?, ?, ?)",
+                        (email, username, fullname, hashed_password, sec_question, sec_answer))
             
         conn.commit()
 
@@ -224,7 +223,7 @@ def login():
             return render_template("login.html")
 
         # hashed_password = hash_password(password)
-        if user[5] != password:
+        if user[4] != password:
             # Wrong password
             flash("Incorrect password.", "error")
             return render_template("login.html")
@@ -246,11 +245,10 @@ def logout():
 @app.route('/edit/<int:id>', methods=['GET'])
 def edit_account(id):
     username = request.form.get("username", "").strip()
-    fname = request.form.get("fname", "").strip()
-    lname = request.form.get("lname", "").strip()
+    fullname = request.form.get("fullname", "").strip()
     password = request.form.get("password", "").strip()
 
-    edit_profile(id, username, fname, lname, password)
+    edit_profile(id, username, fullname, password)
     flash("Profile updated successfully!", "success")
     return redirect(url_for("profile"))
 
@@ -279,7 +277,7 @@ def recover():
                 message = f"Email verified: {email}"
                 session["recover_email"] = email
 
-                question = user[6]   # security question
+                question = user[5]   # security question
                 stage = "question"   # go to security question stage
             else:
                 flash("No account found with that email. Please try again.", "error") 
@@ -295,11 +293,11 @@ def recover():
                 error = "Session expired. Please try again."
                 stage = "email"
             else:
-                stored_answer = user[7]  # stored hash
+                stored_answer = user[6]  # stored hash
 
                 if stored_answer != hash_password(answer):
                     error = "Incorrect answer. Please try again."
-                    question = user[6]
+                    question = user[5]
                     stage = "question"
                 else:
                     # Correct answer, show password reset fields
@@ -355,11 +353,10 @@ def profile():
 
     if request.method == "POST":
         username = request.form.get("username", "").strip()
-        fname = request.form.get("fname", "").strip()
-        lname = request.form.get("lname", "").strip()
+        fullname = request.form.get("fullname", "").strip()
         password = request.form.get("password", "").strip()
 
-        edit_profile(user_id, username, fname, lname, password)
+        edit_profile(user_id, username, fullname, password)
         flash("Profile updated successfully!", "success")
         return redirect(url_for("profile"))
 
@@ -380,7 +377,7 @@ def tasks_page():
     if sort not in ("priority", "due", "timestamp"):
         sort = None
 
-    user = get_user_id(user_id)  # [email, username, fname, lname] etc.
+    user = get_user_id(user_id)  # [email, username, fullname] etc.
     tasks = get_tasks(user_id, sort)
     return render_template("homepage.html", user=user, tasks=tasks, sort=sort, email=session.get("email"))
 
@@ -444,6 +441,21 @@ def undo_delete():
         flash("Task restored.", "success")
     return redirect(url_for("tasks_page"))
 
+@app.route("/complete_task/<int:task_id>", methods=["POST"])
+def complete_task(task_id):
+    if "id" not in session:
+        return "Unauthorized", 403
+    
+    user_id = session["id"]
+    completed = int(request.form["completed"])
+
+    conn = sqlite3.connect(DB_path)
+    cur = conn.cursor()
+    cur.execute("UPDATE Tasks SET completed=? WHERE id=? AND user_id=?", (completed, task_id, user_id))
+    conn.commit()
+    conn.close()
+
+    return "OK"
 
 # ---------------------
 # Template Filters
@@ -473,19 +485,6 @@ def format_timestamp(value, format="%m-%d-%Y | %I:%M %p"):
     except Exception as e:
         print("Timestamp parse error:", e, value)
         return value
-    
-# after every request is processed and a response is created, this function runs before sending the response to the browser
-@app.after_request
-# modifies the HTTP headers of every page Flask sends
-def add_header(resp):
-    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0" 
-                            # do not store any copy of this webpage, browser check with server first before showing a cached page,
-                            # browser must not reuse old content without confirming with server, cached copy is immediately expired  
-    resp.headers["Pragma"] = "no-cache"
-                            # old version of disabling cache 
-    resp.headers["Expires"] = "0"
-                            # makes page expire immediately, always request a fresh one
-    return resp
 
 if __name__ == "__main__":
     init_db()

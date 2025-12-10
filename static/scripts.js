@@ -52,27 +52,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Save changes when checkbox toggled
   taskBox.addEventListener("change", (ev) => {
-    if (ev.target.classList.contains("task-check")) {
-      const li = ev.target.closest(".task");
-      if (!li) return;
+  if (ev.target.classList.contains("task-check")) {
+    const li = ev.target.closest(".task");
+    const id = li.dataset.id;
+    const completed = ev.target.checked ? 1 : 0;
 
-      const id = li.dataset.id;
-      const completedTasks = loadCompletionState();
+    // LOCAL UI
+    li.classList.toggle("completed", completed === 1);
 
-      if (ev.target.checked) {
-        li.classList.add("completed");
-        if (id) completedTasks[id] = true; // save
-      } else {
-        li.classList.remove("completed");
-        if (id) delete completedTasks[id]; // remove
-      }
+    // SAVE LOCAL
+    const state = loadCompletionState();
+    if (completed) state[id] = true;
+    else delete state[id];
+    saveCompletionState(state);
 
-      saveCompletionState(completedTasks); // persist
-    }
-  });
-
-  // --- restore state on load
-  restoreCompletionState();
+    // SAVE TO DATABASE
+    fetch(`/complete_task/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `completed=${completed}`
+    });
+  }
+});
 
   // ==================== TOAST NOTIFICATION ====================
   function showToast(message, undoUrl) {

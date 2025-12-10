@@ -58,13 +58,8 @@
                 <form method="POST" action="{{ url_for('signup') }}">
                     <div id="signup-field">
                         <div class="signup-elem">
-                            <label for="fname">First Name</label>
-                            <input type="text" placeholder="Enter First Name" name="fname" required>
-                        </div>
-
-                        <div class="signup-elem">
-                            <label for="lname">Last Name</label>
-                            <input type="text" placeholder="Enter Last Name" name="lname" required>
+                            <label for="fullname">Name</label>
+                            <input type="text" placeholder="Enter Full Name" name="fullname" required>
                         </div>
 
                         <div class="signup-elem">
@@ -80,6 +75,11 @@
                         <div class="signup-elem">
                             <label for="password">Password</label>
                             <input type="password" placeholder="Create Password" name="password" required>
+                        </div>
+
+                        <div class="signup-elem">
+                            <label for="password">Confirm Password</label>
+                            <input type="password" placeholder="Confirm Password" name="confirm_password" required>
                         </div>
 
                         <div class="signup-elem">
@@ -140,7 +140,6 @@
 
     </div>
         
-
     <script>
         const openSignup = document.getElementById('openSignup');
         const openRecovery = document.getElementById('openRecovery');
@@ -170,6 +169,15 @@
             });
         </script>
     {% endif %}
+
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.replace("{{ url_for('login') }}");
+            }
+        });
+    </script>
+    
     </body>
 </html>
 
